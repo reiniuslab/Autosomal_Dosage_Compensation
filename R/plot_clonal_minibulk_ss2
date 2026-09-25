@@ -1,0 +1,124 @@
+library(data.table)
+library(magrittr)
+
+##
+
+loom2matrix <- function(x){
+  require(loomR)
+  lfile <- connect(x)
+  out <- t(lfile$matrix[,])
+  colnames(out) <- lfile$col.attrs$CellID[]
+  row.names(out) <- lfile$row.attrs$Gene[]
+  lfile$close_all()
+  return(out)
+}
+
+calculate.refratio <- function(ref, alt, probs=0.9, ... ){
+  all <- ref+alt
+  idx <- all < quantile(all, probs = probs)
+  sum(ref[idx], ... ) / sum(all[idx], ... )
+}
+
+fpkm2tpm <- function(x){
+  t(t(x)/colSums(x, na.rm=T))*1e6
+}
+
+median_cl_boot <- function(x, conf = 0.95) {
+  lconf <- (1 - conf)/2
+  uconf <- 1 - lconf
+  require(boot)
+  bmedian <- function(x, ind) median(x[ind])
+  bt <- boot(x, bmedian, 1000)
+  bb <- boot.ci(bt, type = "perc")
+  data.frame(y = median(x), ymin = quantile(bt$t, lconf), ymax = quantile(bt$t, uconf))
+}
+
+##
+
+## load data
+# annotations
+library(rtracklayer)
+anno.gene <- import("out_mRNA/minibulk_SS2_p0/minibulk_p0.final_annot.gtf.gz", feature.type = "gene")
+anno.cell.mb.p0 <- fread("metadata_index_minibulk_SS2_p0_220607.tsv")
+
+# allelic fraction
+mat.frac.mb.p0 <- read.delim("out_mRNA/minibulk_SS2_p0/zUMIs_output/allelic/minibulk_p0.fract_CAST_reads.txt", row.names=1)
+
+mat.frac.mb.p0.melt <- as.data.table(reshape2::melt(as.matrix(mat.frac.mb.p0)))
+mat.frac.mb.p0.melt[, det := mean(!is.na(value)), by="Var1"]
+mat.frac.mb.p0.melt[as.data.table(anno.gene), c("chrom", "pos", "gene_name") := list(seqnames, start, gene_name), on = "Var1 == gene_id"]
+
+# allelic counts
+ls.ae.mb.p0 <- list(
+  "c57" = as.matrix(read.delim("out_mRNA/minibulk_SS2_p0/zUMIs_output/allelic/minibulk_p0.BL6_reads.txt", row.names = 1)),
+  "cast" = as.matrix(read.delim("out_mRNA/minibulk_SS2_p0/zUMIs_output/allelic/minibulk_p0.CAST_reads.txt", row.names = 1))
+)
+
+dat.ae.mb.p0.melt <- dcast(as.data.table(reshape2::melt(ls.ae.mb.p0)), Var1+Var2~L1, value.var="value")
+dat.ae.mb.p0.melt[, total := c57+cast]
+dat.ae.mb.p0.melt[, ratio := c57/total]
+dat.ae.mb.p0.melt[, det := mean(!is.na(ratio)), by="Var1"]
+dat.ae.mb.p0.melt[anno.cell.mb.p0, sample_name := Sample_name, on = "Var2 == Barcode"]
+dat.ae.mb.p0.melt[as.data.table(anno.gene), c("chrom", "pos", "gene_name") := list(seqnames, start, gene_name), on = "Var1 == gene_id"]
+dat.ae.mb.p0.melt[, pos_10mb := round(pos/10e6)*10e6]
+
+# tpm
+mat.tpm.mb.p0 <- fpkm2tpm(loom2matrix("out_mRNA/minibulk_SS2_p0/zUMIs_output/expression/minibulk_p0.rpkm.exon.all.loom"))
+
+mat.tpm.mb.p0.melt <- as.data.table(reshape2::melt(mat.tpm.mb.p0))
+mat.tpm.mb.p0.melt[, tpm.avg := mean(value, na.rm=T), by="Var1"]
+mat.tpm.mb.p0.melt[anno.cell.mb.p0, c("sample_name", "growth_rate") := list(Sample_name, Growth_rate), on = "Var2 == Barcode"]
+mat.tpm.mb.p0.melt[as.data.table(anno.gene), c("chrom", "pos", "gene_name") := list(seqnames, start, gene_name), on = "Var1 == gene_id"]
+
+# allelic tpm
+mat.tpm.allelic.mb.p0 <- list(
+  "c57" = as.matrix(mat.tpm.mb.p0[row.names(mat.frac.mb.p0),colnames(mat.frac.mb.p0)] * (1 - mat.frac.mb.p0)),
+  "cast" = as.matrix(mat.tpm.mb.p0[row.names(mat.frac.mb.p0),colnames(mat.frac.mb.p0)] * mat.frac.mb.p0)
+)
+mat.tpm.allelic.mb.p0.melt <- as.data.table(reshape2::melt(mat.tpm.allelic.mb.p0))
+mat.tpm.allelic.mb.p0.melt[mat.tpm.mb.p0.melt, tpm.avg := tpm.avg, on = c("Var1 == Var1", "Var2 == Var2")]
+mat.tpm.allelic.mb.p0.melt[anno.cell.mb.p0, c("sample_name", "growth_rate") := list(Sample_name, Growth_rate), on = "Var2 == Barcode"]
+mat.tpm.allelic.mb.p0.melt[as.data.table(anno.gene), c("chrom", "pos", "gene_name") := list(seqnames, start, gene_name), on = "Var1 == gene_id"]
+mat.tpm.allelic.mb.p0.melt[, pos_100kb := round(pos/1e5)*1e5]
+
+# counts
+mat.cnt.mb.p0 <- loom2matrix("out_mRNA/minibulk_SS2_p0/zUMIs_output/expression/minibulk_p0.readcount.exon.all.loom")
+
+dat.qc.mb.p0 <- data.table("Reads" = colSums(mat.cnt.mb.p0), "Genes" = colSums(mat.cnt.mb.p0>0), "Sample_id" = colnames(mat.cnt.mb.p0), "Sample_name" = anno.cell.mb.p0[match(colnames(mat.cnt.mb.p0), Barcode), Sample_name])
+exclude.mb.p0 <- dat.qc.mb.p0[Genes < 10e3, Sample_id]
+
+## Plot
+library(ggplot2)
+library(cowplot)
+# qc
+p.qc <- 
+ggplot(dat.qc.mb.p0, aes(x=Reads, y=Genes)) + 
+  geom_point() + 
+  ggrepel::geom_text_repel(data=dat.qc.mb.p0[Genes < 1e4], aes(label=Sample_name)) + 
+  theme_cowplot()
+
+ggsave2("plots/minibulk_ss2_p0_qc.pdf", width = 4, height = 4, p.qc)
+
+# allelic fraction heatmap by chromosome and gene
+ggplot(mat.frac.mb.p0.melt[det > 0.25 & !Var2 %in% exclude.mb.p0], aes(x=factor(pos), y=sample_name, fill=1-value)) +
+  geom_tile() +
+  geom_hline(yintercept=seq(1.5,87.5,1)) +
+  facet_grid(~chrom, scales="free", space="free") +
+  labs(x="Chromosome positio", y="Sample", fill="C57 ratio") +
+  scale_fill_distiller(palette="Spectral", na.value = NA) +
+  theme_void() +
+  theme(panel.border = element_rect(fill=NA), axis.text.y = element_text())
+
+# allelic fraction heatmap by chromosome 100kb binned
+p.heat.chrom <-
+ggplot(dat.ae.mb.p0.melt[!Var2 %in% exclude.mb.p0 & det > 0.25 & chrom %in% 1:19 & total %between% c(3, quantile(total,0.9)), list(c57=sum(c57,na.rm=T), total=sum(total,na.rm=T)), by=c("sample_name", "chrom", "pos_10mb")], aes(x=factor(pos_10mb), y=sample_name, fill=c57/total)) +
+  ggrastr::geom_tile_rast() +
+  facet_grid(~chrom, space="free_x", scales="free_x") +
+  labs(x="Genes (10Mb bins)", y="Clone") +
+  scale_fill_distiller(palette="Spectral", name="C57 ratio") +
+  theme_cowplot() +
+  theme(strip.background = element_blank(), axis.ticks.x = element_blank(), axis.text.x = element_blank(), panel.border = element_rect(colour="black"), panel.spacing = unit(0,"mm"))
+
+ggsave2("plots/minibulk_ss2_p0_refratio.pdf", width = 8, height = 6, p.heat.chrom)
+
+##
