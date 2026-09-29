@@ -36,3 +36,4 @@ Aneuploidy, resulting from segmental or whole-chromosome gains and losses, is ge
 | `magrittr` | 2.0.3 | CRAN |
 | `data.table` | 1.17.0 | CRAN |
 | `UMIcountR` | 0.5.0 | Github (cziegenhain/UMIcountR) |
+| `TOSTER` | 0.8.6 | CRAN |
