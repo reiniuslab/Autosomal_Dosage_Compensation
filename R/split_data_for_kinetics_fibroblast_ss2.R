@@ -30,8 +30,8 @@ tpm.allele.corr.fibro <-  lapply(tpm.allele.fibro, function(x) correct.values(x[
 spl.idx.fibro <- factor(tpm.melt.avg.fibro[chr == "chr3"][match(idx.col, sample), paste(ifelse(clone_id == "non.clonal","nonclonal","clonal"),ifelse(subgroup,"normal","loss"),sep=".")])
 
 sapply(levels(spl.idx.fibro)[table(spl.idx.fibro)>20],function(x){
-  write.table(tpm.allele.corr.fibro$c57[,spl.idx.fibro == x],paste0("kinetics/input/tpm.C57.",x,".csv"),quote = F,sep = ",",col.names = NA,row.names = T)
-  write.table(tpm.allele.corr.fibro$cast[,spl.idx.fibro == x],paste0("kinetics/input/tpm.CAST.",x,".csv"),quote = F,sep = ",",col.names = NA,row.names = T)
+  write.table(tpm.allele.corr.fibro$c57[,spl.idx.fibro == x],paste0("kinetics/input_fibroblast/tpm.C57.",x,".csv"),quote = F,sep = ",",col.names = NA,row.names = T)
+  write.table(tpm.allele.corr.fibro$cast[,spl.idx.fibro == x],paste0("kinetics/input_fibroblast/tpm.CAST.",x,".csv"),quote = F,sep = ",",col.names = NA,row.names = T)
 })
 
 ##                                 
