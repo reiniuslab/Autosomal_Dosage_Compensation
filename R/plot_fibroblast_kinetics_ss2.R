@@ -25,8 +25,8 @@ median_cl_boot <- function(x, conf = 0.95) {
 
 ##
 
-dat.bf.fibro <- load.kinetics.fibro("kinetics/output/split/fibroblast_bf.tsv")
-dat.bs.fibro <- load.kinetics.fibro("kinetics/output/split/fibroblast_bs.tsv")
+dat.bf.fibro <- load.kinetics.fibro("kinetics/output_fibroblast/split/fibroblast_bf.tsv")
+dat.bs.fibro <- load.kinetics.fibro("kinetics/output_fibrolast/split/fibroblast_bs.tsv")
 
 #
 library(ggplot2)
