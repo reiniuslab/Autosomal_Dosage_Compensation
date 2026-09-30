@@ -41,7 +41,7 @@ dat.normumi.avgploidy.xpress[, relative := V1 / median(V1[copies == ploidy], na.
 dat.prot <- rbindlist(list(
   melt(fread("proteomics/20250122_TMT18_Exp1_Frac_Ratio.txt"), id.vars=c("accession", "gene_id", "gene_name")),
   melt(fread("proteomics/20250122_TMT18_Exp2_Frac_Ratio.txt"), id.vars=c("accession", "gene_id", "gene_name")),
-  melt(fread("proteomics/2024_TMT18_Exp3_Frac_Ratio.txt"), id.vars=c("accession", "gene_id", "gene_name"))
+  melt(fread("proteomics/20240127_TMT18_Exp3_Frac_Ratio.txt"), id.vars=c("accession", "gene_id", "gene_name"))
 ), fill=T)
 dat.prot[dat.normumi.xpress, c("ploidy", "copies", "segment", "chrom", "note") := list(ploidy, copies, segment, chrom, note), on = c("gene_id == GeneID", "variable == clone")]
 
@@ -68,7 +68,7 @@ compare_slopes(
 dat.prot.comp <- cbind(dat.prot.avg[order(ploidy, copies), list("prot" = median(V1)), by=c("copies", "ploidy")], "rna" = dat.normumi.avgploidy.xpress[, median(relative, na.rm=T), by=c("ploidy", "copies")][order(ploidy,copies), V1])
 dat.prot.comp[, abs(1-prot/rna), by=c("copies","ploidy")][copies != ploidy, range(V1)]
 
-# protein levels vs copies
+## protein levels vs copies
 p.proteomics.copy <-
 ggplot(dat.prot.avg, aes(x=factor(copies), y=V1 )) +
   geom_boxplot(outlier.shape = NA, show.legend = F, aes(fill=factor(copies-ploidy) )) +
@@ -85,7 +85,7 @@ ggplot(dat.prot.avg, aes(x=factor(copies), y=V1 )) +
 
 ggsave2("plots/proteomics_ratio_copy.pdf", height = 4, width = 3, p.proteomics.copy)
 
-# correlation vs copies
+## correlation vs copies
 p.proteomics.corr <-
 ggplot(dat.prot[chrom %in% 1:19 & note != "Exclude", median(value, na.rm=T), by=c("variable", "copies", "ploidy")], aes(x=log2(copies/ploidy), y=log2(V1/(copies/ploidy)) )) +
   geom_point(aes(col=paste(ploidy, variable))) +
@@ -101,5 +101,43 @@ ggplot(dat.prot[chrom %in% 1:19 & note != "Exclude", median(value, na.rm=T), by=
   theme(strip.background = element_blank(), panel.border = element_rect(colour="black"))
 
 ggsave2("plots/proteomics_obsexp_correlation.pdf", height = 3, width = 5, p.proteomics.corr)
+
+## correlation protein vs rna
+dat.prot2 <- rbindlist(list(
+  melt(fread("proteomics/20250122_TMT18_Exp1_Grouped_Abundance.txt"), id.vars=c("accession", "gene_id", "gene_name")),
+  melt(fread("proteomics/20250122_TMT18_Exp2_Grouped_Abundance.txt"), id.vars=c("accession", "gene_id", "gene_name")),
+  melt(fread("proteomics/20240127_TMT18_Exp3_Grouped_Abundance.txt"), id.vars=c("accession", "gene_id", "gene_name"))
+), fill=T)
+dat.prot2[dat.normumi.xpress, c("ploidy", "copies", "segment", "chrom", "note") := list(ploidy, copies, segment, chrom, note), on = c("gene_id == GeneID", "variable == clone")]
+
+# add pseudobulk norm-umi counts
+dat.prot2[dat.normumi.xpress[, mean(normumi), by=c("GeneID", "clone")], normumi := i.V1, on = c("gene_id == GeneID", "variable == clone")]
+
+p.protrna.cor.2n <- 
+ggplot(dat.prot2[value > 1 & normumi >1 & chrom %in% 1:19 & note != "Exclude" & ploidy == 2], aes(x=log10(normumi), y=log10(value) )) +
+  ggrastr::rasterise(ggpointdensity::geom_pointdensity(stroke=NA, size=1, method.args = list(n = 100), aes(color = after_stat(ndensity)) ), dpi=600) +
+  geom_smooth(method="lm", col="black", se = F) +
+  geom_text(data=dat.prot2[value > 1 & normumi >1 & chrom %in% 1:19 & note != "Exclude" & ploidy == 2, round(cor.test(log10(value),log10(normumi), method="spearman")$estimate, 2), by=c("variable")], hjust = 0, vjust=1, aes(x=0, y=6, label=V1)) +
+  facet_wrap(~variable, nrow=1) +
+  labs(x="UMI (log10)", y="Protein abundance (log10)") +
+  coord_cartesian(xlim=c(0,3), ylim=c(0.5,6)) +
+  scale_color_viridis_c(name="Density", limits=c(0,1)) +
+  theme_cowplot() +
+  theme(aspect.ratio=1, strip.background = element_blank(), panel.border = element_rect(colour="black"))
+
+p.protrna.cor.4n <- 
+ggplot(dat.prot2[value > 1 & normumi >1 & chrom %in% 1:19 & note != "Exclude" & ploidy == 4], aes(x=log10(normumi), y=log10(value) )) +
+  ggrastr::rasterise(ggpointdensity::geom_pointdensity(stroke=NA, size=1, method.args = list(n = 100), aes(color = after_stat(ndensity)) ), dpi=600) +
+  geom_smooth(method="lm", col="black", se = F) +
+  geom_text(data=dat.prot2[value > 1 & normumi >1 & chrom %in% 1:19 & note != "Exclude" & ploidy == 4, round(cor.test(log10(value),log10(normumi), method="spearman")$estimate, 2), by=c("variable")], hjust = 0, vjust=1, aes(x=0, y=6, label=V1)) +
+  facet_wrap(~variable, nrow=1) +
+  labs(x="UMI (log10)", y="Protein abundance (log10)") +
+  coord_cartesian(xlim=c(0,3), ylim=c(0.5,6)) +
+  scale_color_viridis_c(option = "C", name="Density", limits=c(0,1)) +
+  theme_cowplot() +
+  theme(aspect.ratio=1, strip.background = element_blank(), panel.border = element_rect(colour="black"))
+
+library(patchwork)
+ggsave2("plots/proteomics_protein_rna_correlation.pdf", height = 3, width = 10, p.protrna.cor.2n+p.protrna.cor.4n+plot_layout(widths=c(3,5.1)))
 
 ##
