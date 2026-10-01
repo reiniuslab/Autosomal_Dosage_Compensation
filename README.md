@@ -8,7 +8,7 @@
 
 This repository contains scripts and additional data needed to reproduce findings described in [PAPER](), [PRE-PRINT](https://doi.org/10.1101/2025.09.18.677044).
 
-Raw and processed sequencing data is available through ArrayExpress: [[DNA-seq]](https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-15634/), [[Bulk RNA-seq]](https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-15633/) and [[Allelic scRNA-seq]](https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-15744/), and proteomics data is available through PRIDE: [[Proteomics]](https://www.ebi.ac.uk/pride/archive/projects/PXD068580).
+Raw and processed sequencing data is available through ArrayExpress: [[DNA-seq]](https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-15634/), [[Bulk RNA-seq]](https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-15633/) and [[Allelic scRNA-seq]](https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-15744/), and proteomics data is available through PRIDE: [[Proteomics]](https://www.ebi.ac.uk/pride/archive/projects/PXD068580). Additional processed datasets are available in Zenodo [[Datasets]](https://doi.org/10.5281/zenodo.23055741).
 
 Validated CAST/EiJ SNPs were obtained from Hagemann-Jensen et al., 2020 doi:10.1038/s41587-020-0497-0, [data](https://github.com/sandberg-lab/Smart-seq3/blob/5d5938475039f5c98d0d94faf89db917f66fe8ac/allele_level_expression/CAST.SNPs.validated.vcf.gz).
 
