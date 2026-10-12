@@ -20,7 +20,6 @@ dat.normumi.xpress <- readRDS("data/dat_normumi_xpress.rds")
 # load protein class annotations
 orth <- fread("humanproteinatlas/mouse_human_marmoset_macaque_orthologs_20231113.csv")
 anno.class <- rbindlist(list(
-  "metabolic" = fread("humanproteinatlas/protein_class_Metabolic.tsv")[,c(1,3,5)],
   "enzymes" = fread("humanproteinatlas/protein_class_Enzymes_Any.tsv")[,c(1,3,5)],
   "transporters" = fread("humanproteinatlas/protein_class_Transporters_Any.tsv")[,c(1,3,5)],
   "metabolic" = fread("humanproteinatlas/protein_class_Metabolic.tsv")[,c(1,3,5)],
