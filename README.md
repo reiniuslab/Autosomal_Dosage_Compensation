@@ -1,9 +1,12 @@
-# Autosomal Dosage Compensation in Aneuploidy and Cancer Is Mediated by Transcriptional Bursting Regulation
+# Autosomal Dosage Compensation in Aneuploidy and Cancer Involves Transcriptional Bursting Regulation
 *Natali Papanicolaou<sup>1†</sup>, Sebastian Wettersten<sup>1†</sup>, Guilherme Maia<sup>1</sup>, Antonio Lentini<sup>1,2,3#</sup> and Björn Reinius<sup>1#</sup>*
 
 <sup>1</sup>Department of Medical Biochemistry and Biophysics, Karolinska Institutet, Stockholm, Sweden.
+
 <sup>2</sup>Department of Biomedical and Clinical Sciences, Linköping University, Linköping, Sweden.
+
 <sup>2</sup>Science for Life Laboratory (SciLifeLab), Linköping University, Linköping, Sweden.
+
 ##
 
 This repository contains scripts and additional data needed to reproduce findings described in [PAPER](), [PRE-PRINT](https://doi.org/10.1101/2025.09.18.677044).
