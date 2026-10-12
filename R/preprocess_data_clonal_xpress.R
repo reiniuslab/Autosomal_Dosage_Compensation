@@ -28,28 +28,28 @@ scale.allelic <- function(x, mat_frac, alleles = c("C57", "CAST")){
 # annotations
 library(rtracklayer)
 anno.xpress <- list(
-  "barcode" = fread("out_mRNA/clonal_xpress/barcode_annotation.tsv.gz"),
-  "barcode2" = fread("out_mRNA/clonal_xpress_batch2/barcode_annotation_batch2.tsv.gz"),
-  "gene" = import("out_mRNA/clonal_xpress/clonal_xpress.final_annot.gtf.gz", feature.type = "gene")
+  "barcode" = fread("out_mRNA/clonal_xpress_1/barcode_annotation_1.tsv.gz"),
+  "barcode2" = fread("out_mRNA/clonal_xpress_2/barcode_annotation_2.tsv.gz"),
+  "gene" = import("out_mRNA/clonal_xpress_1/clonal_xpress_1.final_annot.gtf.gz", feature.type = "gene")
 )
 
 # expression
-dge.xpress <- readRDS("out_mRNA/clonal_xpress/zUMIs_output/expression/clonal_xpress.dgecounts.rds")
+dge.xpress <- readRDS("out_mRNA/clonal_xpress_1/zUMIs_output/expression/clonal_xpress.dgecounts.rds")
 ls.dge.xpress <- list(
-  "umi_c57" = fread("out_mRNA/clonal_xpress/zUMIs_output/allelic/clonal_xpress.BL6_direct_UMIs.txt"),
-  "umi_cast" = fread("out_mRNA/clonal_xpress/zUMIs_output/allelic/clonal_xpress.CAST_direct_UMIs.txt"),
-  "read_c57" = fread("out_mRNA/clonal_xpress/zUMIs_output/allelic/clonal_xpress.BL6_reads.txt"),
-  "read_cast" = fread("out_mRNA/clonal_xpress/zUMIs_output/allelic/clonal_xpress.CAST_reads.txt"),
-  "molspike" = fread("out_mRNA/clonal_xpress/zUMIs_output/molspikes/clonal_xpress.spikes.filtered.txt.gz")
+  "umi_c57" = fread("out_mRNA/clonal_xpress_1/zUMIs_output/allelic/clonal_xpress_1.BL6_direct_UMIs.txt"),
+  "umi_cast" = fread("out_mRNA/clonal_xpress_1/zUMIs_output/allelic/clonal_xpress_1.CAST_direct_UMIs.txt"),
+  "read_c57" = fread("out_mRNA/clonal_xpress_1/zUMIs_output/allelic/clonal_xpress_1.BL6_reads.txt"),
+  "read_cast" = fread("out_mRNA/clonal_xpress_1/zUMIs_output/allelic/clonal_xpress_1.CAST_reads.txt"),
+  "molspike" = fread("out_mRNA/clonal_xpress_1/zUMIs_output/molspikes/clonal_xpress_1.spikes.filtered.txt.gz")
 )
 
-dge.xpress2 <- readRDS("out_mRNA/clonal_xpress_batch2/zUMIs_output/expression/clonal_xpress_batch2.dgecounts.rds")
+dge.xpress2 <- readRDS("out_mRNA/clonal_xpress_2/zUMIs_output/expression/clonal_xpress_2.dgecounts.rds")
 ls.dge.xpress2 <- list(
-  "umi_c57" = fread("out_mRNA/clonal_xpress_batch2/zUMIs_output/allelic/clonal_xpress_batch2.BL6_direct_UMIs.txt"),
-  "umi_cast" = fread("out_mRNA/clonal_xpress_batch2/zUMIs_output/allelic/clonal_xpress_batch2.CAST_direct_UMIs.txt"),
-  "read_c57" = fread("out_mRNA/clonal_xpress_batch2/zUMIs_output/allelic/clonal_xpress_batch2.BL6_reads.txt"),
-  "read_cast" = fread("out_mRNA/clonal_xpress_batch2/zUMIs_output/allelic/clonal_xpress_batch2.CAST_reads.txt"),
-  "molspike" = fread("out_mRNA/clonal_xpress_batch2/zUMIs_output/molspikes/clonal_xpress_batch2.spikes.filtered.txt.gz")
+  "umi_c57" = fread("out_mRNA/clonal_xpress_2/zUMIs_output/allelic/clonal_xpress_2.BL6_direct_UMIs.txt"),
+  "umi_cast" = fread("out_mRNA/clonal_xpress_2/zUMIs_output/allelic/clonal_xpress_2.CAST_direct_UMIs.txt"),
+  "read_c57" = fread("out_mRNA/clonal_xpress_2/zUMIs_output/allelic/clonal_xpress_2.BL6_reads.txt"),
+  "read_cast" = fread("out_mRNA/clonal_xpress_2/zUMIs_output/allelic/clonal_xpress_2.CAST_reads.txt"),
+  "molspike" = fread("out_mRNA/clonal_xpress_2/zUMIs_output/molspikes/clonal_xpress_2.spikes.filtered.txt.gz")
 )
 
 ## Spike-in normalisation
