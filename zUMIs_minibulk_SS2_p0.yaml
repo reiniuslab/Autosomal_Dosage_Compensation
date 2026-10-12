@@ -1,0 +1,55 @@
+project: minibulk_SS2_p0
+sequence_files:
+  file1:
+    name: /fastq/minibulk_SS2_p0/Undetermined_S1_R1_001.fastq.gz
+    base_definition: cDNA(1-72)
+  file2:
+    name: /fastq/minibulk_SS2_p0/Undetermined_S1_I1_001.fastq.gz
+    base_definition: BC(1-10)
+  file3:
+    name: /fastq/minibulk_SS2_p0/Undetermined_S1_I2_001.fastq.gz
+    base_definition: BC(1-10)
+
+reference:
+  STAR_index: /genome_index/star/GRCm38.p6.mgp.CAST_EiJ_N-masked.noGTF
+  GTF_file: /reference_genomes/mouse/GRCm38.mgp/Mus_musculus.GRCm38.97.chr.gtf
+  additional_STAR_params: '--limitSjdbInsertNsj 2000000 --clip3pAdapterSeq CTGTCTCTTATACACATCT'
+  additional_files: ~
+
+out_dir: /out_mRNA/minibulk_SS2_p0
+
+num_threads: 64
+mem_limit: 0
+
+filter_cutoffs:
+  BC_filter:
+    num_bases: 1
+    phred: 20
+  UMI_filter:
+    num_bases: 1
+    phred: 20
+
+barcodes:
+  barcode_num: ~
+  barcode_file: /expected_barcodes_minibulk_SS2_p0.txt
+  automatic: no
+  BarcodeBinning: 1
+  nReadsperCell: 100
+  demultiplex: no
+
+counting_opts:
+  introns: yes
+  downsampling: '100000,200000'
+  strand: 0
+  Ham_Dist: 1
+  velocyto: no
+  primaryHit: yes
+  twoPass: yes
+
+make_stats: yes
+which_Stage: Filtering
+
+Rscript_exec: Rscript
+STAR_exec: STAR
+pigz_exec: pigz
+samtools_exec: samtools
