@@ -1,0 +1,47 @@
+project: clonal_xpress_2
+sequence_files:
+  file1:
+    name: /fastq/xpress/2/E200007798_L01_read_1.fq.gz
+    base_definition:
+      - UMI(1-10)
+      - cDNA(15-150)
+  file2:
+    name: /fastq/xpress/2/E200007798_L01_read_2.fq.gz
+    base_definition:
+      - cDNA(1-150)
+      - BC(151-170)
+reference:
+  STAR_index: /genome_index/star/GRCm38.p6.mgp.CAST_EiJ_N-masked.noGTF
+  GTF_file: /reference_genomes/mouse/GRCm38.mgp/Mus_musculus.GRCm38.97.chr.gtf
+  additional_STAR_params: '--clip3pAdapterSeq CTGTCTCTTATACACATCT'
+  additional_files:
+    - /molecularSpikes_complexset_5p.fa
+out_dir: /out_mRNA/clonal_xpress_2
+num_threads: 64
+mem_limit: 64
+filter_cutoffs:
+  BC_filter:
+    num_bases: 4
+    phred: 20
+  UMI_filter:
+    num_bases: 3
+    phred: 20
+barcodes:
+  barcode_num: ~
+  barcode_file: /expected_barcodes_clonal_xpress_2.txt
+  barcode_sharing: /barcode_shares_clonal_xpress_2.txt
+  automatic: no
+  BarcodeBinning: 1
+  demultiplex: no
+  nReadsperCell: 100
+  discardReads: yes
+counting_opts:
+  introns: yes
+  downsampling: '0'
+  strand: 1
+  Ham_Dist: 1
+  velocyto: no
+  primaryHit: yes
+  twoPass: no
+make_stats: yes
+which_Stage: Filtering
