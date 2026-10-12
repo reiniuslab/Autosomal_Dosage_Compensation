@@ -1,6 +1,4 @@
-[![DOI](https://zenodo.org/badge/1059281016.svg)](https://doi.org/10.5281/zenodo.23313109)
-
-# Autosomal Dosage Compensation in Aneuploidy and Cancer Involves Transcriptional Bursting Regulation
+# Autosomal Dosage Compensation in Aneuploidy and Cancer Involves Transcriptional Burst Regulation
 *Natali Papanicolaou<sup>1†</sup>, Sebastian Wettersten<sup>1†</sup>, Guilherme Maia<sup>1</sup>, Antonio Lentini<sup>1,2,3#</sup> and Björn Reinius<sup>1#</sup>*
 
 <sup>1</sup>Department of Medical Biochemistry and Biophysics, Karolinska Institutet, Stockholm, Sweden.
